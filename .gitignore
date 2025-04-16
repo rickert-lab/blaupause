@@ -1,4 +1,5 @@
 # Specify filepatterns you want git to ignore.
-target
+/target/
 *.swp
 .DS_Store
+/tags

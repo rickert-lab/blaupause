@@ -1852,7 +1852,7 @@ blaupause	Cargo.toml	/^name = "blaupause"$/;"	p
 blaupause	README.md	/^# blaupause/;"	c
 blaupause	index.html	/^    <title>blaupause<\/title>$/;"	j
 build	Trunk.toml	/^[build]$/;"	t
-cacheName	assets/sw.js	/^var cacheName = 'egui-template-pwa';$/;"	v
+cacheName	assets/sw.js	/^var cacheName = 'blaupause-pwa';$/;"	v
 code	target/.rustc_info.json	/^{"rustc_fingerprint":16064559273955138052,"outputs":{"4614504638168534921":{"success":true,"stat/;"	n	object:outputs.15729799797837862367
 code	target/.rustc_info.json	/^{"rustc_fingerprint":16064559273955138052,"outputs":{"4614504638168534921":{"success":true,"stat/;"	n	object:outputs.16495917692426387086
 code	target/.rustc_info.json	/^{"rustc_fingerprint":16064559273955138052,"outputs":{"4614504638168534921":{"success":true,"stat/;"	n	object:outputs.4614504638168534921
