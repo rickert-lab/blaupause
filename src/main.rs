@@ -20,6 +20,6 @@ fn main() -> eframe::Result {
     eframe::run_native(
         "blaupause",
         native_options,
-        Box::new(|cc| Ok(Box::new(blaupause::TemplateApp::new(cc)))),
+        Box::new(|cc| Ok(Box::new(blaupause::BlaupauseApp::new(cc)))),
     )
 }
