@@ -2,4 +2,4 @@
 /target/
 *.swp
 .DS_Store
-/tags
+tags
