@@ -10,9 +10,9 @@ pub struct BlaupauseApp {
     source_string: String,
     target_buffer: Option<PathBuf>,
     target_string: String,
-
-    #[serde(skip)] // This how you opt-out of serialization of a field
-    value: f32,
+    archive_copy: bool,
+    delete_copy: bool,
+    validate_copy: bool,
 }
 
 impl Default for BlaupauseApp {
@@ -23,7 +23,9 @@ impl Default for BlaupauseApp {
             source_string: format!("[source path]"),
             target_buffer: Some(PathBuf::new()),
             target_string: format!("[target path]"),
-            value: 0.1,
+            archive_copy: true,
+            delete_copy: false,
+            validate_copy: false,
         }
     }
 }
@@ -54,7 +56,7 @@ impl eframe::App for BlaupauseApp {
 
         egui::CentralPanel::default().show(ctx, |ui| {
             // The central panel the region left after adding TopPanel's and SidePanel's
-            ui.heading("Blaupause: You copy assistant.");
+            ui.heading("Blaupause: The copy assistant.");
 
             ui.separator();
 
@@ -88,15 +90,25 @@ impl eframe::App for BlaupauseApp {
 
             ui.separator();
 
+            ui.checkbox(&mut self.archive_copy, "Archvie (source)");
+            ui.checkbox(&mut self.delete_copy, "Delete (target)");
+            ui.checkbox(&mut self.validate_copy, "Validate (target)");
             ui.vertical_centered(|sui| {
-                if sui.button("Copy").clicked() {
+                if sui.button("Copy directory!").clicked() {
                     let output = Command::new(native_copy_command())
-                        .args(native_copy_args(&self.source_string, &self.target_string))
+                        .args(native_copy_args(
+                            &self.archive_copy,
+                            &self.delete_copy,
+                            &self.validate_copy,
+                            &self.source_string,
+                            &self.target_string,
+                        ))
                         .output()
                         .expect("Failed to copy.");
                     println!("{:?}", output);
                 };
             });
+            ui.separator();
 
             ui.separator();
 
@@ -116,10 +128,27 @@ impl eframe::App for BlaupauseApp {
 fn native_copy_command() -> String {
     format!("rsync")
 }
-fn native_copy_args(source: &String, target: &String) -> Vec<String> {
-    let mut param_vec: Vec<String> = vec!["-avP".to_string()];
+fn native_copy_args(
+    archive_copy: &bool,
+    delete_copy: &bool,
+    validate_copy: &bool,
+    source: &String,
+    target: &String,
+) -> Vec<String> {
+    let mut param_vec: Vec<String> = vec!["-rl".to_string()]; // copy recursively and preserve links
+    if *archive_copy {
+        param_vec[0].push_str("a")
+    }
+    if *delete_copy {
+        param_vec.push("--delete-during".to_string())
+    }
+    if *validate_copy {
+        param_vec.push("--checksum".to_string())
+    }
+    param_vec.push("--bwlimit=100".to_string());
     param_vec.push(source.to_string());
     param_vec.push(target.to_string());
+    println!("{:?}", param_vec);
     param_vec
 }
 
