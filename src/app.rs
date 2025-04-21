@@ -1,5 +1,6 @@
 use rfd::FileDialog;
 use std::path::PathBuf;
+use std::process::Command;
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -53,29 +54,52 @@ impl eframe::App for BlaupauseApp {
 
         egui::CentralPanel::default().show(ctx, |ui| {
             // The central panel the region left after adding TopPanel's and SidePanel's
-            ui.heading("Blaupause: Your native copy assistant.");
+            ui.heading("Blaupause: You copy assistant.");
 
             ui.separator();
 
-            ui.horizontal(|ui| {
-                ui.label("Source path: ");
-                ui.text_edit_singleline(&mut self.source_string);
+            ui.horizontal(|sui| {
+                sui.label("Source path: ");
+                sui.add_sized(
+                    sui.available_size(),
+                    egui::TextEdit::multiline(&mut self.source_string),
+                );
             });
-            if ui.button("Choose...").clicked() {
-                self.source_buffer = get_folder_with_label("Choose source folder");
-                self.source_string = get_string_from_buffer(&self.source_buffer);
-            }
-            ui.horizontal(|ui| {
-                ui.label("Target path: ");
-                ui.text_edit_singleline(&mut self.target_string);
+            ui.vertical_centered(|sui| {
+                if sui.button("Choose source...").clicked() {
+                    self.source_buffer = get_folder_with_label("Choose source folder");
+                    self.source_string = get_string_from_buffer(&self.source_buffer);
+                };
+            });
+            ui.horizontal(|sui| {
+                sui.label("Target path: ");
+                sui.add_sized(
+                    sui.available_size(),
+                    egui::TextEdit::multiline(&mut self.target_string),
+                );
             });
 
-            if ui.button("Choose...").clicked() {
-                self.source_buffer = get_folder_with_label("Choose target folder");
-                self.source_string = get_string_from_buffer(&self.target_buffer);
-            }
+            ui.vertical_centered(|sui| {
+                if sui.button("Choose target...").clicked() {
+                    self.target_buffer = get_folder_with_label("Choose target folder");
+                    self.target_string = get_string_from_buffer(&self.target_buffer);
+                }
+            });
 
             ui.separator();
+
+            ui.vertical_centered(|sui| {
+                if sui.button("Copy").clicked() {
+                    let output = Command::new(native_copy_command())
+                        .args(native_copy_args(&self.source_string, &self.target_string))
+                        .output()
+                        .expect("Failed to copy.");
+                    println!("{:?}", output);
+                };
+            });
+
+            ui.separator();
+
             ui.add(egui::github_link_file!(
                 "https://github.com/christianrickert/blaupause",
                 "Source code."
@@ -86,6 +110,17 @@ impl eframe::App for BlaupauseApp {
             });
         });
     }
+}
+
+#[cfg(target_os = "macos")]
+fn native_copy_command() -> String {
+    format!("rsync")
+}
+fn native_copy_args(source: &String, target: &String) -> Vec<String> {
+    let mut param_vec: Vec<String> = vec!["-avP".to_string()];
+    param_vec.push(source.to_string());
+    param_vec.push(target.to_string());
+    param_vec
 }
 
 fn get_folder_with_label(label: &str) -> Option<PathBuf> {
