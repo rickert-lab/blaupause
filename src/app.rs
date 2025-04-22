@@ -38,7 +38,6 @@ impl BlaupauseApp {
         if let Some(storage) = cc.storage {
             return eframe::get_value(storage, eframe::APP_KEY).unwrap_or_default();
         }
-
         Default::default()
     }
 }
@@ -93,9 +92,11 @@ impl eframe::App for BlaupauseApp {
             ui.checkbox(&mut self.archive_copy, "Archvie (source)");
             ui.checkbox(&mut self.delete_copy, "Delete (target)");
             ui.checkbox(&mut self.validate_copy, "Validate (target)");
+
             ui.vertical_centered(|sui| {
                 if sui.button("Copy directory!").clicked() {
-                    let output = Command::new(native_copy_command())
+                    Command::new(native_clear_command()).status().ok();
+                    Command::new(native_copy_command())
                         .args(native_copy_args(
                             &self.archive_copy,
                             &self.delete_copy,
@@ -103,12 +104,12 @@ impl eframe::App for BlaupauseApp {
                             &self.source_string,
                             &self.target_string,
                         ))
-                        .output()
-                        .expect("Failed to copy.");
-                    println!("{:?}", output);
+                        .spawn()
+                        .expect("Failed to start copy command.")
+                        .wait()
+                        .expect("Failed to wait on copy command.");
                 };
             });
-            ui.separator();
 
             ui.separator();
 
@@ -125,9 +126,16 @@ impl eframe::App for BlaupauseApp {
 }
 
 #[cfg(target_os = "macos")]
+fn native_clear_command() -> String {
+    format!("clear")
+}
+
+#[cfg(target_os = "macos")]
 fn native_copy_command() -> String {
     format!("rsync")
 }
+
+#[cfg(target_os = "macos")]
 fn native_copy_args(
     archive_copy: &bool,
     delete_copy: &bool,
@@ -135,7 +143,7 @@ fn native_copy_args(
     source: &String,
     target: &String,
 ) -> Vec<String> {
-    let mut param_vec: Vec<String> = vec!["-rl".to_string()]; // copy recursively and preserve links
+    let mut param_vec: Vec<String> = vec!["-rlvP".to_string()]; // copy recursively and preserve links
     if *archive_copy {
         param_vec[0].push_str("a")
     }
@@ -148,7 +156,6 @@ fn native_copy_args(
     param_vec.push("--bwlimit=100".to_string());
     param_vec.push(source.to_string());
     param_vec.push(target.to_string());
-    println!("{:?}", param_vec);
     param_vec
 }
 
