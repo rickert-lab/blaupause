@@ -1,18 +1,20 @@
 use rfd::FileDialog;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
-/// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct BlaupauseApp {
     source_buffer: Option<PathBuf>,
     source_string: String,
+    source_button: String,
     target_buffer: Option<PathBuf>,
     target_string: String,
+    target_button: String,
     archive_copy: bool,
     delete_copy: bool,
     validate_copy: bool,
+    copy_button: String,
 }
 
 impl Default for BlaupauseApp {
@@ -20,24 +22,28 @@ impl Default for BlaupauseApp {
         Self {
             // Example stuff
             source_buffer: Some(PathBuf::new()),
-            source_string: format!("[source path]"),
+            source_string: format!("[Source directory]"),
+            source_button: format!(" Browse source... "),
             target_buffer: Some(PathBuf::new()),
-            target_string: format!("[target path]"),
+            target_string: format!("[Target directory]"),
+            target_button: format!(" Browse target... "),
             archive_copy: true,
             delete_copy: false,
             validate_copy: false,
+            copy_button: format!("\n    Copy source    \n      to target!    \n"),
         }
     }
 }
 
 impl BlaupauseApp {
     /// Called once before the first frame.
-    pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
+    pub fn new(_cc: &eframe::CreationContext<'_>) -> Self {
         // Load previous app state (if any).
         // Note that you must enable the `persistence` feature for this to work.
+        /*
         if let Some(storage) = cc.storage {
             return eframe::get_value(storage, eframe::APP_KEY).unwrap_or_default();
-        }
+        }*/
         Default::default()
     }
 }
@@ -60,77 +66,90 @@ impl eframe::App for BlaupauseApp {
             ui.separator();
 
             ui.horizontal(|sui| {
-                sui.label("Source path: ");
-                sui.add_sized(
-                    sui.available_size(),
-                    egui::TextEdit::multiline(&mut self.source_string),
-                );
-            });
-            ui.vertical_centered(|sui| {
-                if sui.button("Choose source...").clicked() {
-                    self.source_buffer = get_folder_with_label("Choose source folder");
-                    self.source_string = get_string_from_buffer(&self.source_buffer);
-                };
-            });
-            ui.horizontal(|sui| {
-                sui.label("Target path: ");
-                sui.add_sized(
-                    sui.available_size(),
-                    egui::TextEdit::multiline(&mut self.target_string),
+                sui.add_enabled(
+                    false,
+                    egui::TextEdit::multiline(&mut self.source_string)
+                        .desired_rows(3)
+                        .desired_width(f32::INFINITY),
                 );
             });
 
             ui.vertical_centered(|sui| {
-                if sui.button("Choose target...").clicked() {
-                    self.target_buffer = get_folder_with_label("Choose target folder");
+                if sui.button(&self.source_button).clicked() {
+                    self.source_buffer = get_folder_with_label("Select source directory!");
+                    self.source_string = get_string_from_buffer(&self.source_buffer);
+                };
+            });
+
+            ui.separator();
+
+            ui.horizontal(|sui| {
+                sui.add_enabled(
+                    false,
+                    egui::TextEdit::multiline(&mut self.target_string)
+                        .desired_rows(3)
+                        .desired_width(f32::INFINITY),
+                );
+            });
+
+            ui.vertical_centered(|sui| {
+                if sui.button(&self.target_button).clicked() {
+                    self.target_buffer = get_folder_with_label("Select target directory!");
                     self.target_string = get_string_from_buffer(&self.target_buffer);
                 }
             });
 
             ui.separator();
 
-            ui.checkbox(&mut self.archive_copy, "Archvie (source)");
-            ui.checkbox(&mut self.delete_copy, "Delete (target)");
-            ui.checkbox(&mut self.validate_copy, "Validate (target)");
-
-            ui.vertical_centered(|sui| {
-                if sui.button("Copy directory!").clicked() {
-                    //Command::new(native_clear_command()).status().ok();
-                    Command::new(native_copy_command())
-                        .args(native_copy_args(
-                            &self.archive_copy,
-                            &self.delete_copy,
-                            &self.validate_copy,
-                            &self.source_string,
-                            &self.target_string,
-                        ))
-                        .spawn()
-                        .expect("Failed to start copy command.")
-                        .wait()
-                        .expect("Failed to wait on copy command.");
-                };
-            });
+            ui.checkbox(&mut self.archive_copy, "Archive: Keep original metadata.");
+            ui.checkbox(
+                &mut self.delete_copy,
+                "Delete: Remove surplus target files.",
+            );
+            ui.checkbox(
+                &mut self.validate_copy,
+                "Validate: Check target files during copy.",
+            );
 
             ui.separator();
 
-            ui.add(egui::github_link_file!(
-                "https://github.com/christianrickert/blaupause",
-                "Source code."
-            ));
-            ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
-                powered_by_egui_and_eframe(ui);
-                egui::warn_if_debug_build(ui);
+            if is_existing_directory(&self.source_string)
+                && is_existing_directory(&self.target_string)
+            {
+                // valid source and target directory
+                ui.vertical_centered(|sui| {
+                    if sui.button(&self.copy_button).clicked() {
+                        Command::new(native_copy_command())
+                            .args(native_copy_args(
+                                &self.archive_copy,
+                                &self.delete_copy,
+                                &self.validate_copy,
+                                &self.source_string,
+                                &self.target_string,
+                            ))
+                            .spawn()
+                            .expect("Failed to start copy command.")
+                            .wait()
+                            .expect("Failed to wait on copy command.");
+                    };
+                });
+            } else {
+                // source or target does not exist (yet)
+                ui.vertical_centered(|sui| {
+                    sui.add_enabled(false, egui::Button::new(&self.copy_button));
+                });
+            }
+
+            ui.separator();
+            ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                ui.hyperlink_to(
+                    "v0.1 by Christian Rickert  ",
+                    "https://github.com/christianrickert/blaupause/",
+                );
             });
         });
     }
 }
-
-/*
-#[cfg(target_os = "macos")]
-fn native_clear_command() -> String {
-    format!("clear")
-}
-*/
 
 #[cfg(target_os = "macos")]
 fn native_copy_command() -> String {
@@ -172,16 +191,7 @@ fn get_string_from_buffer(buffer: &Option<PathBuf>) -> String {
     }
 }
 
-fn powered_by_egui_and_eframe(ui: &mut egui::Ui) {
-    ui.horizontal(|ui| {
-        ui.spacing_mut().item_spacing.x = 0.0;
-        ui.label("Powered by ");
-        ui.hyperlink_to("egui", "https://github.com/emilk/egui");
-        ui.label(" and ");
-        ui.hyperlink_to(
-            "eframe",
-            "https://github.com/emilk/egui/tree/master/crates/eframe",
-        );
-        ui.label(".");
-    });
+fn is_existing_directory(path: &String) -> bool {
+    let path = Path::new(path);
+    path.exists() && path.is_dir()
 }
