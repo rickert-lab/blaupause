@@ -141,11 +141,12 @@ impl eframe::App for BlaupauseApp {
             }
 
             ui.separator();
-            ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                ui.hyperlink_to(
+            ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |sui| {
+                sui.hyperlink_to(
                     "v0.1 by Christian Rickert  ",
                     "https://github.com/christianrickert/blaupause/",
                 );
+                egui::warn_if_debug_build(sui);
             });
         });
     }
