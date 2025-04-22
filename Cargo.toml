@@ -14,7 +14,6 @@ eframe = { version = "0.31", default-features = false, features = [
     "accesskit",     # Make egui compatible with screen readers.
     "default_fonts", # Embed the default egui fonts.
     "glow",          # Use the glow rendering backend. Alternative: "wgpu".
-    "persistence",   # Enable restoring app state when restarting the app.
     "wayland",       # To support Linux (and CI)
 ] }
 log = "0.4"

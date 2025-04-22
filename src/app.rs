@@ -41,33 +41,36 @@ impl Default for BlaupauseApp {
 
 impl BlaupauseApp {
     /// Called once before the first frame.
-    pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
-        // Load previous app state (if any).
-        // Note that you must enable the `persistence` feature for this to work.
-        if let Some(storage) = cc.storage {
-            return eframe::get_value(storage, eframe::APP_KEY).unwrap_or_default();
-        }
+    pub fn new() -> Self {
         Default::default()
     }
 }
 
 impl eframe::App for BlaupauseApp {
-    /// Called by the framework to save state before shutdown.
-    fn save(&mut self, storage: &mut dyn eframe::Storage) {
-        eframe::set_value(storage, eframe::APP_KEY, self);
-    }
-
     /// Called each time the UI needs repainting, which may be many times per second.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         // Put your widgets into a `SidePanel`, `TopBottomPanel`, `CentralPanel`, `Window` or `Area`.
         // For inspiration and more examples, go to https://emilk.github.io/egui
 
+        egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
+            // The top panel is often a good place for a menu bar:
+            egui::menu::bar(ui, |ui| {
+                let is_web = cfg!(target_arch = "wasm32");
+                if !is_web {
+                    ui.menu_button("File", |ui| {
+                        if ui.button("Quit").clicked() {
+                            ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+                        }
+                    });
+                    ui.add_space(16.0);
+                }
+                egui::widgets::global_theme_preference_buttons(ui);
+                egui::warn_if_debug_build(ui);
+            });
+        });
+
         egui::CentralPanel::default().show(ctx, |ui| {
             // The central panel the region left after adding TopPanel's and SidePanel's
-            ui.heading("Blaupause: The copy assistant.");
-
-            ui.separator();
-
             ui.horizontal(|sui| {
                 sui.add_enabled(
                     false,
@@ -150,14 +153,6 @@ impl eframe::App for BlaupauseApp {
                         } else {
                             eprintln!("Executable not found: {}", &native_copy_command);
                         }
-                        /*
-                        Command::new(&native_copy_command)
-                            .args(&native_copy_args)
-                            .spawn()
-                            .expect("Failed to start copy command.")
-                            .wait()
-                            .expect("Failed to wait on copy command.");
-                        */
                     };
                 });
             } else {
@@ -168,12 +163,12 @@ impl eframe::App for BlaupauseApp {
             };
 
             ui.separator();
+
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |sui| {
                 sui.hyperlink_to(
                     "v0.1 by Christian Rickert  ",
                     "https://github.com/christianrickert/blaupause/",
                 );
-                egui::warn_if_debug_build(sui);
             });
         });
     }
