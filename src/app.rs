@@ -43,7 +43,7 @@ impl BlaupauseApp {
 }
 
 impl eframe::App for BlaupauseApp {
-    /// Called by the frame work to save state before shutdown.
+    /// Called by the framework to save state before shutdown.
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
         eframe::set_value(storage, eframe::APP_KEY, self);
     }
@@ -95,7 +95,7 @@ impl eframe::App for BlaupauseApp {
 
             ui.vertical_centered(|sui| {
                 if sui.button("Copy directory!").clicked() {
-                    Command::new(native_clear_command()).status().ok();
+                    //Command::new(native_clear_command()).status().ok();
                     Command::new(native_copy_command())
                         .args(native_copy_args(
                             &self.archive_copy,
@@ -125,10 +125,12 @@ impl eframe::App for BlaupauseApp {
     }
 }
 
+/*
 #[cfg(target_os = "macos")]
 fn native_clear_command() -> String {
     format!("clear")
 }
+*/
 
 #[cfg(target_os = "macos")]
 fn native_copy_command() -> String {
