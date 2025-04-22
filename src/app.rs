@@ -65,7 +65,12 @@ impl eframe::App for BlaupauseApp {
                     ui.add_space(16.0);
                 }
                 egui::widgets::global_theme_preference_buttons(ui);
-                egui::warn_if_debug_build(ui);
+                ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |sui| {
+                    sui.hyperlink_to(
+                        "v0.1 by Christian Rickert  ",
+                        "https://github.com/christianrickert/blaupause/",
+                    );
+                });
             });
         });
 
@@ -165,10 +170,8 @@ impl eframe::App for BlaupauseApp {
             ui.separator();
 
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |sui| {
-                sui.hyperlink_to(
-                    "v0.1 by Christian Rickert  ",
-                    "https://github.com/christianrickert/blaupause/",
-                );
+                sui.label("Powered by egui & eframe.");
+                egui::warn_if_debug_build(sui);
             });
         });
     }
