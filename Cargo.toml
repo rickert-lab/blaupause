@@ -17,7 +17,6 @@ eframe = { version = "0.31", default-features = false, features = [
     "wayland",       # To support Linux (and CI)
 ] }
 log = "0.4"
-serde = { version = "1", features = ["derive"] }  # enable GUI persistance
 rfd = "0.15.3"  # native file dialogs
 which = "7.0.3"
 

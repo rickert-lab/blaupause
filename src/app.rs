@@ -6,8 +6,6 @@ use which::which;
 #[allow(unused_imports)]
 use std::ffi::OsStr;
 
-#[derive(serde::Deserialize, serde::Serialize)]
-#[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct BlaupauseApp {
     source_buffer: Option<PathBuf>,
     source_string: String,
@@ -31,7 +29,7 @@ impl Default for BlaupauseApp {
             target_buffer: Some(PathBuf::new()),
             target_string: "[Target directory]".to_string(),
             target_button: " Browse target... ".to_string(),
-            archive_copy: true,
+            archive_copy: false,
             delete_copy: false,
             validate_copy: false,
             copy_button: "\n    Copy source    \n      to target!    \n".to_string(),
@@ -66,10 +64,7 @@ impl eframe::App for BlaupauseApp {
                 }
                 egui::widgets::global_theme_preference_buttons(ui);
                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |sui| {
-                    sui.hyperlink_to(
-                        "v0.1 by Christian Rickert  ",
-                        "https://github.com/christianrickert/blaupause/",
-                    );
+                    sui.label("Powered by egui & eframe.");
                 });
             });
         });
@@ -112,13 +107,18 @@ impl eframe::App for BlaupauseApp {
 
             ui.separator();
 
-            ui.checkbox(&mut self.archive_copy, "Archive: Keep original metadata.");
+            let enabled = !cfg!(target_os = "windows");
+            ui.add_enabled(
+                enabled,
+                egui::widgets::Checkbox::new(
+                    &mut self.archive_copy,
+                    "Archive: Keep original metadata.",
+                ),
+            );
             ui.checkbox(
                 &mut self.delete_copy,
                 "Delete: Remove surplus target files.",
             );
-
-            let enabled = !cfg!(target_os = "windows");
             ui.add_enabled(
                 enabled,
                 egui::widgets::Checkbox::new(
@@ -144,7 +144,7 @@ impl eframe::App for BlaupauseApp {
                             &self.target_string,
                         );
                         println!(
-                            "COMMAND: \"{} {}\"",
+                            "COMMAND: {} {}",
                             &native_copy_command,
                             &native_copy_args.join(" ")
                         );
@@ -152,9 +152,7 @@ impl eframe::App for BlaupauseApp {
                             Command::new(&native_copy_command)
                                 .args(&native_copy_args)
                                 .spawn()
-                                .expect("Failed to start copy command.")
-                                .wait()
-                                .expect("Failed to wait on copy command.");
+                                .expect("Failed to start copy command.");
                         } else {
                             eprintln!("Executable not found: {}", &native_copy_command);
                         }
@@ -170,7 +168,10 @@ impl eframe::App for BlaupauseApp {
             ui.separator();
 
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |sui| {
-                sui.label("Powered by egui & eframe.");
+                sui.hyperlink_to(
+                    "Version 0.1 by Christian Rickert.  ",
+                    "https://github.com/christianrickert/blaupause/",
+                );
                 egui::warn_if_debug_build(sui);
             });
         });
@@ -190,9 +191,15 @@ fn native_copy_args(
     source: &String,
     target: &String,
 ) -> Vec<String> {
-    let mut param_vec: Vec<String> = vec!["-rlvPW".to_string()];
+    let mut param_vec: Vec<String> = Vec::new();
+    param_vec.push("-h".to_string()); // human-readable output
+    param_vec.push("-r".to_string()); // recursive copying
+    param_vec.push("-l".to_string()); // preserve links
+    param_vec.push("-v".to_string()); // verbose (summary)
+    param_vec.push("-P".to_string()); // progress report
+    param_vec.push("-W".to_string()); // copy entire file (faster)
     if *archive_copy {
-        param_vec[0].push('a');
+        param_vec[0].push('a'); // preserve metadata (-Dgloprt)
     }
     if *delete_copy {
         param_vec.push("--delete-during".to_string());
@@ -211,7 +218,7 @@ fn native_copy_command() -> String {
 
 #[cfg(target_os = "windows")]
 fn native_copy_args(
-    archive_copy: &bool,
+    _archive_copy: &bool,
     delete_copy: &bool,
     _validate_copy: &bool,
     source: &String,
@@ -225,17 +232,17 @@ fn native_copy_args(
         .file_name()
         .unwrap_or_else(|| OsStr::new("copy"));
     let new_target = Some(Path::new(target).join(&source_dir));
-    param_vec.push(get_string_from_buffer(&new_target));
-    param_vec.push("/e /eta /mt /v /zb".to_string());
-    if *archive_copy {
-        param_vec.push("/copy:DATSOU /dcopy:DATE".to_string());
-    }
+    param_vec.push(get_string_from_buffer(&new_target).to_string());
+    param_vec.push("/E".to_string()); // recursive, including empty directories
+    param_vec.push("/ETA".to_string()); // progress report
+    param_vec.push("/V".to_string()); // verbose (show skipped)
     if *delete_copy {
-        param_vec.push("/purge".to_string());
+        param_vec.push("/PURGE".to_string());
     }
 
     param_vec
 }
+
 fn get_folder_with_label(label: &str) -> Option<PathBuf> {
     FileDialog::new().set_title(label).pick_folder()
 }
