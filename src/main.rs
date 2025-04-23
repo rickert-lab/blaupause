@@ -14,7 +14,7 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 
 Author:     Christian Rickert <rc.email@icloud.com>
-Date:       2025-04-22
+Date:       2025-04-23
 Version:    0.1
 */
 
