@@ -29,7 +29,8 @@ eframe = { version = "0.31", default-features = false, features = [
     "accesskit",     # Make egui compatible with screen readers.
     "default_fonts", # Embed the default egui fonts.
     "glow",          # Use the glow rendering backend. Alternative: "wgpu".
-    "wayland",       # To support Linux (and CI)
+    "wayland",       # To support newer Linux (and CI)
+    "x11",           # To support older Linux (and CI)
 ] }
 rfd = "0.15.3"  # native file dialogs
 which = "7.0.3"
