@@ -1,3 +1,20 @@
+/*
+This file is part of blaupause.
+
+Copyright (C) 2025 Christian Rickert
+
+blaupause is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, version 3.
+
+blaupause is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 use rfd::FileDialog;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -169,7 +186,7 @@ impl eframe::App for BlaupauseApp {
 
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |sui| {
                 sui.hyperlink_to(
-                    "Version 0.1 by Christian Rickert.  ",
+                    "Version 0.1 by Christian Rickert. ",
                     "https://github.com/christianrickert/blaupause/",
                 );
                 egui::warn_if_debug_build(sui);
