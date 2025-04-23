@@ -67,15 +67,12 @@ impl eframe::App for BlaupauseApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
             egui::menu::bar(ui, |ui| {
-                let is_web = cfg!(target_arch = "wasm32");
-                if !is_web {
-                    ui.menu_button("File", |ui| {
-                        if ui.button("Quit").clicked() {
-                            ctx.send_viewport_cmd(egui::ViewportCommand::Close);
-                        }
-                    });
-                    ui.add_space(16.0);
-                }
+                ui.menu_button("File", |ui| {
+                    if ui.button("Quit").clicked() {
+                        ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+                    }
+                });
+                ui.add_space(16.0);
                 egui::widgets::global_theme_preference_buttons(ui);
                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |sui| {
                     sui.label("Powered by egui & eframe.");
@@ -153,7 +150,7 @@ impl eframe::App for BlaupauseApp {
 
                         // print command
                         println!(
-                            "COMMAND: {} {}",
+                            "\r\n{} {}",
                             &native_copy_command,
                             &native_copy_args.join(" ")
                         );
@@ -163,7 +160,7 @@ impl eframe::App for BlaupauseApp {
                             Command::new(&native_copy_command)
                                 .args(&native_copy_args)
                                 .spawn()
-                                .expect("Failed to start copy command.");
+                                .expect("Failed to run command.");
                         } else {
                             eprintln!("Executable not found: {}", &native_copy_command);
                         }
