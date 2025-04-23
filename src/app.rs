@@ -32,6 +32,7 @@ pub struct BlaupauseApp {
     target_button: String,
     archive_copy: bool,
     delete_copy: bool,
+    is_unix: bool,
     validate_copy: bool,
     copy_button: String,
 }
@@ -46,6 +47,7 @@ impl Default for BlaupauseApp {
             target_string: "[Target directory]".to_string(),
             target_button: " Browse target... ".to_string(),
             archive_copy: false,
+            is_unix: !cfg!(target_os = "windows"),
             delete_copy: false,
             validate_copy: false,
             copy_button: "\n    Copy source    \n      to target!    \n".to_string(),
@@ -118,20 +120,13 @@ impl eframe::App for BlaupauseApp {
 
             ui.separator();
 
-            let enabled = !cfg!(target_os = "windows");
-            ui.add_enabled(
-                enabled,
-                egui::widgets::Checkbox::new(
-                    &mut self.archive_copy,
-                    "Archive: Keep original metadata.",
-                ),
-            );
+            ui.checkbox(&mut self.archive_copy, "Archive: Keep original metadata.");
             ui.checkbox(
                 &mut self.delete_copy,
                 "Delete: Remove surplus target files.",
             );
             ui.add_enabled(
-                enabled,
+                self.is_unix,
                 egui::widgets::Checkbox::new(
                     &mut self.validate_copy,
                     "Validate: Check target files during copy.",
@@ -251,7 +246,7 @@ fn native_copy_command() -> String {
 
 #[cfg(target_os = "windows")]
 fn native_copy_args(
-    _archive_copy: &bool,
+    archive_copy: &bool,
     delete_copy: &bool,
     _validate_copy: &bool,
     source: &String,
@@ -260,7 +255,7 @@ fn native_copy_args(
     let mut param_vec: Vec<String> = Vec::new();
     param_vec.push(source.to_string());
     // ROBOCOPY dumps the content of the source directory into the target directory,
-    // we have to fix it here to avoid unfortunate situations involving '--purge'
+    // we have to fix it here to avoid unfortunate situations involving '/PURGE'.
     let source_dir = Path::new(source)
         .file_name()
         .unwrap_or_else(|| OsStr::new("copy"));
@@ -269,6 +264,9 @@ fn native_copy_args(
     param_vec.push("/E".to_string()); // recursive, including empty directories
     param_vec.push("/ETA".to_string()); // progress report
     param_vec.push("/V".to_string()); // verbose (show skipped)
+    if *archive_copy {
+        param_vec.push("/COPYALL".to_string()); // copy file information (/copy:DATSOU)
+    }
     if *delete_copy {
         param_vec.push("/PURGE".to_string());
     }
