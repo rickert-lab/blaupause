@@ -18,9 +18,6 @@ Date:       2025-04-22
 Version:    0.1
 */
 
-#![warn(clippy::all, rust_2018_idioms)]
-
-// When compiling natively:
 fn main() -> eframe::Result {
     let fixed_size = [566.0, 350.0];
     let native_options = eframe::NativeOptions {

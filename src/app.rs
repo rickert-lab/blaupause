@@ -39,7 +39,6 @@ pub struct BlaupauseApp {
 impl Default for BlaupauseApp {
     fn default() -> Self {
         Self {
-            // Example stuff
             source_buffer: Some(PathBuf::new()),
             source_string: "[Source directory]".to_string(),
             source_button: " Browse source... ".to_string(),
@@ -64,11 +63,7 @@ impl BlaupauseApp {
 impl eframe::App for BlaupauseApp {
     /// Called each time the UI needs repainting, which may be many times per second.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        // Put your widgets into a `SidePanel`, `TopBottomPanel`, `CentralPanel`, `Window` or `Area`.
-        // For inspiration and more examples, go to https://emilk.github.io/egui
-
         egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
-            // The top panel is often a good place for a menu bar:
             egui::menu::bar(ui, |ui| {
                 let is_web = cfg!(target_arch = "wasm32");
                 if !is_web {
@@ -87,7 +82,6 @@ impl eframe::App for BlaupauseApp {
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            // The central panel the region left after adding TopPanel's and SidePanel's
             ui.horizontal(|sui| {
                 sui.add_enabled(
                     false,
@@ -152,6 +146,7 @@ impl eframe::App for BlaupauseApp {
                 // valid source and target directory
                 ui.vertical_centered(|sui| {
                     if sui.button(&self.copy_button).clicked() {
+                        // prepare command
                         let native_copy_command = native_copy_command();
                         let native_copy_args = native_copy_args(
                             &self.archive_copy,
@@ -160,11 +155,15 @@ impl eframe::App for BlaupauseApp {
                             &self.source_string,
                             &self.target_string,
                         );
+
+                        // print command
                         println!(
                             "COMMAND: {} {}",
                             &native_copy_command,
                             &native_copy_args.join(" ")
                         );
+
+                        // run command
                         if which(&native_copy_command).is_ok() {
                             Command::new(&native_copy_command)
                                 .args(&native_copy_args)
@@ -176,7 +175,7 @@ impl eframe::App for BlaupauseApp {
                     };
                 });
             } else {
-                // source or target does not exist (yet)
+                // source or target do not exist (yet)
                 ui.vertical_centered(|sui| {
                     sui.add_enabled(false, egui::Button::new(&self.copy_button));
                 });
@@ -193,6 +192,22 @@ impl eframe::App for BlaupauseApp {
             });
         });
     }
+}
+
+fn get_folder_with_label(label: &str) -> Option<PathBuf> {
+    FileDialog::new().set_title(label).pick_folder()
+}
+
+fn get_string_from_buffer(buffer: &Option<PathBuf>) -> String {
+    match buffer {
+        Some(path) => path.display().to_string(),
+        None => String::new(),
+    }
+}
+
+fn is_existing_directory(path: &String) -> bool {
+    let path = Path::new(path);
+    path.exists() && path.is_dir()
 }
 
 #[cfg(any(target_os = "linux", target_os = "macos"))]
@@ -228,6 +243,7 @@ fn native_copy_args(
     param_vec.push(target.to_string());
     param_vec
 }
+
 #[cfg(target_os = "windows")]
 fn native_copy_command() -> String {
     "ROBOCOPY".to_string()
@@ -258,20 +274,4 @@ fn native_copy_args(
     }
 
     param_vec
-}
-
-fn get_folder_with_label(label: &str) -> Option<PathBuf> {
-    FileDialog::new().set_title(label).pick_folder()
-}
-
-fn get_string_from_buffer(buffer: &Option<PathBuf>) -> String {
-    match buffer {
-        Some(path) => path.display().to_string(),
-        None => String::new(),
-    }
-}
-
-fn is_existing_directory(path: &String) -> bool {
-    let path = Path::new(path);
-    path.exists() && path.is_dir()
 }

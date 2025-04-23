@@ -31,13 +31,8 @@ eframe = { version = "0.31", default-features = false, features = [
     "glow",          # Use the glow rendering backend. Alternative: "wgpu".
     "wayland",       # To support Linux (and CI)
 ] }
-log = "0.4"
 rfd = "0.15.3"  # native file dialogs
 which = "7.0.3"
-
-# native:
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-env_logger = "0.11"
 
 [profile.release]
 opt-level = 2 # fast and small
