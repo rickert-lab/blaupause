@@ -1,6 +1,6 @@
 # blaupause 🗂️
 
-_blaupause_ is a minimalistic tool to copy a directory.
+_blaupause_ is a minimalistic tool to copy a single directory.
 
 <img src="./assets/gui.png" alt="GUI with macOS" width="566">  
 
