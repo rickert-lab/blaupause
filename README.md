@@ -16,4 +16,4 @@ Both _rsync_ and _ROBOCOPY_ support incremental updates: If a transfer is interr
 >[!CAUTION]
 If you enable the delete option (default: unchecked), any directories/files that exist on the target (receiving side) but are missing on the source (sending side) **will be deleted** — effectively synchronizing both directories. If the delete option remains unchecked, existing items on the target **will be updated but never deleted**.
 
-_blaupause_ is built with [egui](https://github.com/emilk/egui) and [eframe](https://github.com/emilk/eframe) by Emil Ernerfeldt ([@emilk](https://github.com/emilk)). For licensing details, please refer to the respective copyright notices.
+_blaupause_ is built with [egui](https://github.com/emilk/egui) and [eframe]([https://github.com/emilk/eframe](https://github.com/emilk/egui/tree/master/crates/eframe) by Emil Ernerfeldt ([@emilk](https://github.com/emilk)). For licensing details, please refer to the respective copyright notices.
