@@ -17,7 +17,7 @@ rsync -hrlvPW /source /target [-a --delete-during --checksum]
 
 // ROBOCOPY on Windows with default and [custom] options
 // https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/robocopy
-ROBOCOPY \\source \\target /E /ETA /MT:2 /V [/COPYALL /PURGE]
+ROBOCOPY \\source \\target\source /E /ETA /MT:2 /V [/COPYALL /PURGE]
 ```
 ROBOCOPY does not offer an explicit checksum verification but instead checks transfers by comparing file sizes and timestamps: The 'Validate' option is therefore disabled on Windows.
 
