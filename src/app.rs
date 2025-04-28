@@ -222,16 +222,19 @@ fn native_copy_args(
         "-l".to_string(), // preserve links
         "-v".to_string(), // verbose (summary)
         "-P".to_string(), // progress report
-        "-W".to_string(),
-    ]; // copy entire file (faster)
+        "-W".to_string(), // copy entire file (faster)
+    ];
+    if cfg!(target_os = "linux") {
+        param_vec.push("--info=progress2".to_string()); // show time remaining, v3.1.0 (2013-09-28)
+    }
     if *archive_copy {
         param_vec[0].push('a'); // preserve metadata (-Dgloprt)
     }
     if *delete_copy {
-        param_vec.push("--delete-during".to_string());
+        param_vec.push("--delete-during".to_string()); //receiver deletes during the transfer (sync)
     }
     if *validate_copy {
-        param_vec.push("--checksum".to_string());
+        param_vec.push("--checksum".to_string()); // skip based on checksum, not mod-time & size
     }
     param_vec.push(source.to_string());
     param_vec.push(target.to_string());
@@ -268,7 +271,7 @@ fn native_copy_args(
         param_vec.push("/COPYALL".to_string()); // copy file information (/copy:DATSOU)
     }
     if *delete_copy {
-        param_vec.push("/PURGE".to_string());
+        param_vec.push("/PURGE".to_string()); // delete target items missing in source (sync)
     }
 
     param_vec
