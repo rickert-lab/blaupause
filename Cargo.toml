@@ -18,7 +18,7 @@ name = "blaupause"
 version = "0.1.0"
 authors = ["Christian Rickert <rc.email@icloud.com>"]
 edition = "2021"
-include = ["LICENSE-APACHE", "LICENSE-MIT", "**/*.rs", "Cargo.toml"]
+include = ["LICENSE-APACHE", "LICENSE-MIT", "LICENSE", "**/*.rs", "Cargo.toml"]
 
 [package.metadata.docs.rs]
 all-features = true
@@ -33,7 +33,7 @@ eframe = { version = "0.31", default-features = false, features = [
     "x11",           # To support older Linux (and CI)
 ] }
 rfd = "0.15.3"  # native file dialogs
-which = "7.0.3"
+which = "7.0.3"  # same as native command
 
 [profile.release]
 opt-level = 2 # fast and small
