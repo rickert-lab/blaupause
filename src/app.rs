@@ -157,10 +157,11 @@ impl eframe::App for BlaupauseApp {
 
                         // run command
                         if which(&native_copy_command).is_ok() {
-                            Command::new(&native_copy_command)
+                            let _ = Command::new(&native_copy_command)
                                 .args(&native_copy_args)
                                 .spawn()
-                                .expect("Failed to run command.");
+                                .expect("Failed to run command.")
+                                .wait();
                         } else {
                             eprintln!("Executable not found: {}", &native_copy_command);
                         }
@@ -215,13 +216,14 @@ fn native_copy_args(
     source: &String,
     target: &String,
 ) -> Vec<String> {
-    let mut param_vec: Vec<String> = Vec::new();
-    param_vec.push("-h".to_string()); // human-readable output
-    param_vec.push("-r".to_string()); // recursive copying
-    param_vec.push("-l".to_string()); // preserve links
-    param_vec.push("-v".to_string()); // verbose (summary)
-    param_vec.push("-P".to_string()); // progress report
-    param_vec.push("-W".to_string()); // copy entire file (faster)
+    let mut param_vec: Vec<String> = vec![
+        "-h".to_string(), // human-readable output
+        "-r".to_string(), // recursive copying
+        "-l".to_string(), // preserve links
+        "-v".to_string(), // verbose (summary)
+        "-P".to_string(), // progress report
+        "-W".to_string(),
+    ]; // copy entire file (faster)
     if *archive_copy {
         param_vec[0].push('a'); // preserve metadata (-Dgloprt)
     }
