@@ -266,6 +266,7 @@ fn native_copy_args(
     param_vec.push("/E".to_string()); // recursive, including empty directories
     param_vec.push("/ETA".to_string()); // progress report
     param_vec.push("/MT:2".to_string()); // multi-threading
+    param_vec.push("/R:0".to_string()); // no retry upon failure
     param_vec.push("/V".to_string()); // verbose (show skipped)
     if *archive_copy {
         param_vec.push("/COPYALL".to_string()); // copy file information (/copy:DATSOU)
