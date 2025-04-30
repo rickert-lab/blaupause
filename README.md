@@ -17,12 +17,12 @@ rsync -hrlvPW /source /target [-a --delete-during --checksum]
 
 // ROBOCOPY on Windows with default and [custom] options
 // https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/robocopy
-ROBOCOPY \\source \\target\source /E /ETA /MT:2 /V [/COPYALL /PURGE]
+ROBOCOPY \\source \\target\source /E /ETA /MT:2 /R:0 /V [/COPYALL /PURGE]
 ```
 ROBOCOPY does not offer an explicit checksum verification but instead checks transfers by comparing file sizes and timestamps: The 'Validate' option is therefore disabled on Windows.
 
 >[!TIP]
-Both _rsync_ and _ROBOCOPY_ support incremental updates: If a transfer is interrupted (e.g., due to connection loss or timeouts), simply rerun the operation to resume and complete it. Unchanged directories/files will be skipped, modified ones will be replaced, and missing items will be added.
+Both _rsync_ and _ROBOCOPY_ support incremental updates. If a transfer is interrupted (e.g., due to connection loss or timeouts), you will find a corresponding message in the reports: simply rerun the operation to resume and complete it. Unchanged directories/files will be skipped, modified ones will be replaced, and missing items will be added.
 
 >[!CAUTION]
 If you enable the delete option (default: unchecked), any directories/files that exist on the target (receiving side) but are missing on the source (sending side) **will be deleted** — effectively synchronizing both directories. If the delete option remains unchecked, existing items on the target **will be updated but never deleted**.
