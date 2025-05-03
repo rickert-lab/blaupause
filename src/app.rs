@@ -1,7 +1,7 @@
 /*
 This file is part of blaupause.
 
-Copyright (C) 2025 Christian Rickert
+zRpyright (C) 2025 The Regents of the University of Colorado
 
 blaupause is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -179,7 +179,7 @@ impl eframe::App for BlaupauseApp {
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |sui| {
                 sui.hyperlink_to(
                     "Version 0.1 by Christian Rickert. ",
-                    "https://github.com/christianrickert/blaupause/",
+                    "https://github.com/rickert-lab/blaupause/",
                 );
                 egui::warn_if_debug_build(sui);
             });

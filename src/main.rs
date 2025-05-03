@@ -1,6 +1,6 @@
 /*
 blaupause - The copy assistant.
-Copyright (C) 2025 Christian Rickert
+Copyright (C) 2025 The Regents of the University of Colorado
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -13,8 +13,8 @@ PARTICULAR PURPOSE. See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 
-Author:     Christian Rickert <rc.email@icloud.com>
-Date:       2025-04-27
+Author:     Christian Rickert <christian.rickert@cuanschutz.edu>
+Date:       2025-04-30
 Version:    0.1
 */
 

@@ -1,6 +1,6 @@
 # This file is part of blaupause.
 #
-# Copyright (C) 2025 Christian Rickert
+# Copyright (C) 2025 The Regents of the University of Colorado
 #
 # blaupause is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -16,7 +16,7 @@
 [package]
 name = "blaupause"
 version = "0.1.0"
-authors = ["Christian Rickert <rc.email@icloud.com>"]
+authors = ["Christian Rickert <christian.rickert@cuanschutz.edu>"]
 edition = "2021"
 include = ["LICENSE-APACHE", "LICENSE-MIT", "LICENSE", "**/*.rs", "Cargo.toml"]
 
