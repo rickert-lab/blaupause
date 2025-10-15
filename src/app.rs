@@ -218,8 +218,8 @@ fn native_copy_args(
 ) -> Vec<String> {
     let mut param_vec: Vec<String> = vec![
         "-h".to_string(), // human-readable output
-        "-r".to_string(), // recursive copying
         "-l".to_string(), // preserve links
+        "-r".to_string(), // recursive copying
         "-v".to_string(), // verbose (summary)
         "-P".to_string(), // progress report
         "-W".to_string(), // copy entire file (faster)
