@@ -24,16 +24,16 @@ include = ["LICENSE-APACHE", "LICENSE-MIT", "LICENSE", "**/*.rs", "Cargo.toml"]
 all-features = true
 
 [dependencies]
-egui = "0.31"
-eframe = { version = "0.31", default-features = false, features = [
+eframe = { version = "0.33", default-features = false, features = [
     "accesskit",     # Make egui compatible with screen readers.
     "default_fonts", # Embed the default egui fonts.
     "glow",          # Use the glow rendering backend. Alternative: "wgpu".
     "wayland",       # To support newer Linux (and CI)
     "x11",           # To support older Linux (and CI)
 ] }
-rfd = "0.15.3"  # native file dialogs
-which = "7.0.3"  # same as native command
+egui = "0.33"  # graphical user interface
+rfd = "0.15.4"  # native file dialogs
+which = "8.0.0"  # same as native command
 
 [profile.release]
 opt-level = 2 # fast and small

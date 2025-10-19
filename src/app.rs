@@ -66,7 +66,7 @@ impl eframe::App for BlaupauseApp {
     /// Called each time the UI needs repainting, which may be many times per second.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
-            egui::menu::bar(ui, |ui| {
+            egui::MenuBar::new().ui(ui, |ui| {
                 ui.menu_button("File", |ui| {
                     if ui.button("Quit").clicked() {
                         ctx.send_viewport_cmd(egui::ViewportCommand::Close);
@@ -274,6 +274,5 @@ fn native_copy_args(
     if *delete_copy {
         param_vec.push("/PURGE".to_string()); // delete target items missing in source (sync)
     }
-
     param_vec
 }
