@@ -15,7 +15,7 @@
 
 [package]
 name = "blaupause"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Christian Rickert <christian.rickert@cuanschutz.edu>"]
 edition = "2021"
 include = ["LICENSE-APACHE", "LICENSE-MIT", "LICENSE", "**/*.rs", "Cargo.toml"]

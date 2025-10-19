@@ -178,7 +178,7 @@ impl eframe::App for BlaupauseApp {
 
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |sui| {
                 sui.hyperlink_to(
-                    "Version 0.1 by Christian Rickert. ",
+                    "Version 0.2 by Christian Rickert. ",
                     "https://github.com/rickert-lab/blaupause/",
                 );
                 egui::warn_if_debug_build(sui);
