@@ -223,6 +223,7 @@ fn native_copy_args(
         "-v".to_string(), // verbose (summary)
         "-P".to_string(), // progress report
         "-W".to_string(), // copy entire file (faster)
+        "--stats".to_string(), // transfer summary
     ];
     if cfg!(target_os = "linux") {
         param_vec.push("--info=progress2".to_string()); // show time remaining, v3.1.0 (2013-09-28)
