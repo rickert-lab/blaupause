@@ -19,7 +19,7 @@ Version:    0.1
 */
 
 fn main() -> eframe::Result {
-    let fixed_size = [566.0, 350.0];
+    let fixed_size = [591.0, 365.0];
     let native_options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
             .with_max_inner_size([f32::INFINITY, fixed_size[1]])
