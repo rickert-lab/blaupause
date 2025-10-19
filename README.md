@@ -13,7 +13,7 @@ _blaupause_ offers a sensible default configuration to optimize transfer speeds 
 ```
 // rsync on Linux & macOS with default and [custom] options
 // https://download.samba.org/pub/rsync/rsync.1
-rsync -hrlvPW /source /target [-a --delete-during --checksum]
+rsync -hrlvPW --stats /source /target [-a --delete-during --checksum]
 
 // ROBOCOPY on Windows with default and [custom] options
 // https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/robocopy
